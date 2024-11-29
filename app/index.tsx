@@ -1,8 +1,9 @@
-import { Alert, Image, ScrollView, StatusBar, Text, View } from "react-native";
+import { Image, ScrollView, StatusBar, Text, View } from "react-native";
 import React from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { images } from "@/constants";
 import CustomButton from "@/components/CustomButton";
+import { router } from "expo-router";
 
 const App = () => {
     return (
@@ -37,12 +38,7 @@ const App = () => {
                     <CustomButton
                         title="Continue with email"
                         containerStyles="mt-7 w-full"
-                        handlePress={() =>
-                            Alert.alert(
-                                "email button",
-                                "touchable opacity pressed"
-                            )
-                        }
+                        handlePress={() => router.push("/sign-in")}
                     />
                 </View>
             </ScrollView>
