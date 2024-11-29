@@ -1,10 +1,13 @@
-import { View, ScrollView, Image, Text } from "react-native";
-import React, { useState } from "react";
+import { View, ScrollView, Image, Text, Alert } from "react-native";
+import React, { useEffect, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { images } from "@/constants";
 import FormField from "@/components/FormField";
 import CustomButton from "@/components/CustomButton";
-import { Link } from "expo-router";
+import { Link, router } from "expo-router";
+import { createUser } from "@/lib/appwite";
+import { AppwriteException } from "react-native-appwrite";
+import { useGlobalContext } from "@/context/GlobalProvider";
 
 const SignUp = () => {
     const [form, setForm] = useState({
@@ -12,6 +15,36 @@ const SignUp = () => {
         email: "",
         password: "",
     });
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const { setUser, setIsLoggedIn } = useGlobalContext();
+
+    const handleSubmit = async () => {
+        if (form.email === "" || form.password === "" || form.username === "") {
+            Alert.alert("Error", "Please fill in all the details");
+        }
+        setIsSubmitting(true);
+
+        try {
+            const result = await createUser(
+                form.email,
+                form.password,
+                form.username
+            );
+
+            setUser(result);
+            setIsLoggedIn(true);
+
+            router.replace("/home");
+        } catch (e: unknown) {
+            if (e instanceof AppwriteException) {
+                Alert.alert("Error", e.message);
+            } else {
+                Alert.alert("Error", "An unexpected error occurred.");
+            }
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
 
     return (
         <SafeAreaView className="bg-primary h-full">
@@ -55,8 +88,8 @@ const SignUp = () => {
                     />
 
                     <CustomButton
-                        title="Log in"
-                        handlePress={() => {}}
+                        title="Sign up"
+                        handlePress={handleSubmit}
                         containerStyles="w-full mt-7"
                     />
 
